@@ -21,6 +21,27 @@
   --shadow-md: 0 2px 8px rgba(28,25,23,0.10), 0 8px 24px rgba(28,25,23,0.06);
 }
 
+/* ─── Dark Mode Tokens ───────────────────────────────────── */
+[data-theme="dark"] {
+  --bg:        #111110;
+  --bg-card:   #1C1B1A;
+  --bg-input:  #252422;
+  --border:    #2E2C2A;
+  --border-md: #3D3A37;
+  --ink:       #F5F2ED;
+  --ink-2:     #C8C3BC;
+  --ink-3:     #7A746E;
+  --ink-4:     #4A4642;
+  --accent:    #5A9E6F;
+  --accent-lt: #1A2E20;
+  --accent-dk: #8FCB9B;
+  --danger:    #C0544A;
+  --gold:      #D4A43A;
+  --shadow:    0 1px 3px rgba(0,0,0,0.3), 0 4px 12px rgba(0,0,0,0.2);
+  --shadow-md: 0 2px 8px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.3);
+}
+
+
 /* ─── Reset ──────────────────────────────────────────────── */
 *, *::before, *::after { 
     box-sizing: border-box; 
@@ -745,4 +766,29 @@ select.input option {
 .spotify-link:hover { 
   background: #17a349; 
   color: white; 
+}
+
+/* ─── Theme Toggle Button ────────────────────────────────── */
+.theme-toggle {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--ink-3);
+  cursor: pointer;
+  padding: 6px 12px;
+  font-family: 'Jost', sans-serif;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+.theme-toggle:hover {
+  border-color: var(--border-md);
+  color: var(--ink);
+}
+
+/* ─── Smooth theme transition ────────────────────────────── */
+*, *::before, *::after {
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.15s ease;
 }
