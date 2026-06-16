@@ -1003,3 +1003,100 @@ select.input option {
   background: #2D1515; 
   color: #FCA5A5; 
 }
+
+/* ─── Search & Sort Bar ──────────────────────────────────── */
+.search-bar {
+  position: relative;
+  margin-bottom: 1rem;
+}
+.search-bar i {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--ink-4);
+  font-size: 16px;
+  pointer-events: none;
+}
+.search-bar .input {
+  padding-left: 36px;
+}
+.search-bar .clear-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--ink-4);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 2px;
+  display: flex;
+}
+
+.search-bar .clear-btn:hover { 
+  color: var(--ink); 
+}
+
+.sort-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+.sort-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  white-space: nowrap;
+}
+.sort-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 11px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: none;
+  font-family: 'Jost', sans-serif;
+  font-size: 12px;
+  color: var(--ink-3);
+  cursor: pointer;
+  transition: all 0.18s;
+  white-space: nowrap;
+}
+
+.sort-btn:hover { 
+  border-color: var(--border-md); 
+  color: var(--ink); 
+}
+
+.sort-btn.active { 
+  background: var(--ink); 
+  border-color: var(--ink); 
+  color: var(--bg); 
+}
+
+.results-meta {
+  font-size: 12px;
+  color: var(--ink-4);
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.highlight {
+  background: #FEF08A;
+  color: #713F12;
+  border-radius: 2px;
+  padding: 0 2px;
+}
+[data-theme="dark"] .highlight {
+  background: #713F12;
+  color: #FEF08A;
+}
