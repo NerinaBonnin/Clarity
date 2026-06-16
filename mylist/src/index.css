@@ -792,3 +792,214 @@ select.input option {
 *, *::before, *::after {
   transition: background-color 0.25s ease, border-color 0.25s ease, color 0.15s ease;
 }
+
+/* ─── Priority Badges ────────────────────────────────────── */
+.priority-selector {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.priority-btn {
+  flex: 1;
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border);
+  background: none;
+  font-family: 'Jost', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.18s;
+  color: var(--ink-3);
+}
+
+.priority-btn:hover { 
+  border-color: var(--border-md); 
+  color: var(--ink); 
+}
+
+.priority-btn.active-alta  { 
+  background: #FEE2E2; 
+  border-color: #FCA5A5; 
+  color: #991B1B; 
+}
+
+.priority-btn.active-media { 
+  background: #FEF3C7; 
+  border-color: #FCD34D; 
+  color: #92400E; 
+}
+
+.priority-btn.active-baja  { 
+  background: #DCFCE7; 
+  border-color: #86EFAC; 
+  color: #166534; 
+}
+
+[data-theme="dark"] .priority-btn.active-alta  { 
+  background: #2D1515; 
+  border-color: #7F1D1D; 
+  color: #FCA5A5; 
+}
+
+[data-theme="dark"] .priority-btn.active-media { 
+  background: #2D2210; 
+  border-color: #78350F; 
+  color: #FCD34D; 
+}
+
+[data-theme="dark"] .priority-btn.active-baja  { 
+  background: #0F2D1A; 
+  border-color: #14532D; 
+  color: #86EFAC; 
+}
+
+.priority-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.dot-alta  { 
+  background: #EF4444; 
+}
+
+.dot-media { 
+  background: #F59E0B; 
+}
+
+.dot-baja  { 
+  background: #22C55E; 
+}
+
+.dot-none  { 
+  background: var(--border-md); 
+}
+
+.todo-meta {
+  font-size: 11px;
+  color: var(--ink-4);
+  margin-top: 2px;
+}
+
+.due-soon  { 
+  color: #D97706; 
+}
+
+.due-over  { 
+  color: #DC2626; 
+}
+
+/* ─── Status Selector ────────────────────────────────────── */
+.status-selector {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.status-btn {
+  padding: 5px 11px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: none;
+  font-family: 'Jost', sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.18s;
+  color: var(--ink-3);
+}
+
+.status-btn:hover { 
+  border-color: var(--border-md); 
+  color: var(--ink); 
+}
+
+.status-btn.active-pendiente  { 
+  background: var(--bg-input);
+  border-color: var(--border-md); 
+  color: var(--ink-2); 
+}
+
+.status-btn.active-en-curso   { 
+  background: #EFF6FF; 
+  border-color: #93C5FD; 
+  color: #1D4ED8; 
+}
+
+.status-btn.active-completado { 
+  background: var(--accent-lt); 
+  border-color: var(--accent); 
+  color: var(--accent-dk); 
+}
+
+.status-btn.active-abandonado { 
+  background: #FEE2E2; 
+  border-color: #FCA5A5; 
+  color: #991B1B; 
+}
+
+[data-theme="dark"] .status-btn.active-en-curso  { 
+  background: #0F1E35; 
+  border-color: #1D4ED8; 
+  color: #93C5FD; 
+}
+
+[data-theme="dark"] .status-btn.active-completado { 
+  background: var(--accent-lt); 
+  border-color: var(--accent); 
+  color: var(--accent-dk); 
+}
+
+[data-theme="dark"] .status-btn.active-abandonado { 
+  background: #2D1515; 
+  border-color: #7F1D1D; 
+  color: #FCA5A5; 
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.badge-pendiente  { 
+  background: var(--bg-input); 
+  color: var(--ink-3); 
+}
+
+.badge-en-curso   { 
+  background: #EFF6FF; 
+  color: #1D4ED8; 
+}
+
+.badge-completado { 
+  background: var(--accent-lt); 
+  color: var(--accent-dk); 
+}
+
+.badge-abandonado { 
+  background: #FEE2E2; 
+  color: #991B1B; 
+}
+
+[data-theme="dark"] .badge-en-curso   { 
+  background: #0F1E35; 
+  color: #93C5FD; 
+}
+
+[data-theme="dark"] .badge-completado { 
+  background: var(--accent-lt); 
+  color: var(--accent-dk); 
+}
+
+[data-theme="dark"] .badge-abandonado { 
+  background: #2D1515; 
+  color: #FCA5A5; 
+}
