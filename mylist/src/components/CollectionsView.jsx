@@ -8,6 +8,12 @@ const CAT_ICONS = {
   Películas: '🎬', Series: '📺', Libros: '📚',
   Música: '🎵', Juegos: '🎮', Podcasts: '🎙️',
 };
+const STATUSES = [
+  { key: 'pendiente',  label: '📋 Pendiente' },
+  { key: 'en-curso',   label: '▶️ En curso' },
+  { key: 'completado', label: '✅ Completado' },
+  { key: 'abandonado', label: '🚫 Abandonado' },
+];
 
 function RatingPicker({ value, onChange }) {
   const [hover, setHover] = useState(0);
@@ -27,13 +33,15 @@ function RatingPicker({ value, onChange }) {
 
 const EMPTY_FORM = {
   title: '', creator: '', cat: 'Películas',
-  rating: 0, desc: '', img: '', spotifyUrl: ''
+  rating: 0, desc: '', img: '',
+  spotifyUrl: '', status: 'pendiente',
 };
 
 export default function CollectionsView() {
   const [items, setItems] = useLocalStorage('items', []);
   const [nextId, setNextId] = useLocalStorage('itemNextId', 1);
   const [activeCat, setActiveCat] = useState('Todas');
+  const [activeStatus, setActiveStatus] = useState('todos');
   const [form, setForm] = useState(EMPTY_FORM);
   const [selected, setSelected] = useState(null);
   const [sharing, setSharing] = useState(false);
@@ -41,7 +49,6 @@ export default function CollectionsView() {
 
   const update = (key, val) => setForm(f => ({ ...f, [key]: val }));
 
-  // Convierte la imagen seleccionada a base64
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -66,10 +73,21 @@ export default function CollectionsView() {
     setItems(prev => prev.filter(x => x.id !== id));
   };
 
-  const filtered = activeCat === 'Todas' ? items : items.filter(x => x.cat === activeCat);
+  const updateStatus = (id, status, e) => {
+    e.stopPropagation();
+    setItems(prev => prev.map(x => x.id === id ? { ...x, status } : x));
+    if (selected?.id === id) setSelected(s => ({ ...s, status }));
+  };
+
+  const filtered = items.filter(x => {
+    const catOk = activeCat === 'Todas' || x.cat === activeCat;
+    const statusOk = activeStatus === 'todos' || x.status === activeStatus;
+    return catOk && statusOk;
+  });
 
   return (
     <>
+      {/* Category tabs */}
       <div className="cat-tabs">
         {CATS.map(c => (
           <button key={c} className={`cat-tab${c === activeCat ? ' active' : ''}`}
@@ -79,6 +97,19 @@ export default function CollectionsView() {
         ))}
       </div>
 
+      {/* Status filter */}
+      <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
+        {['todos', ...STATUSES.map(s => s.key)].map(s => (
+          <button key={s}
+            className={`cat-tab${activeStatus === s ? ' active' : ''}`}
+            style={{ fontSize: '12px', padding: '4px 12px' }}
+            onClick={() => setActiveStatus(s)}>
+            {s === 'todos' ? 'Todos' : STATUSES.find(x => x.key === s)?.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Add form */}
       <div className="card" style={{ marginBottom: '1rem' }}>
         <div className="section-label">
           <i className="ti ti-circle-plus" /> Agregar a colección
@@ -109,8 +140,20 @@ export default function CollectionsView() {
           </div>
         </div>
 
-        {/* Imagen desde dispositivo */}
         <div className="form-group" style={{ marginTop: '12px' }}>
+          <label className="input-label">Estado</label>
+          <div className="status-selector">
+            {STATUSES.map(s => (
+              <button key={s.key}
+                className={`status-btn${form.status === s.key ? ` active-${s.key}` : ''}`}
+                onClick={() => update('status', s.key)}>
+                {s.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="form-group">
           <label className="input-label">Imagen</label>
           <label className="image-upload-area">
             {preview ? (
@@ -132,7 +175,6 @@ export default function CollectionsView() {
           )}
         </div>
 
-        {/* Link Spotify — solo para Música y Podcasts */}
         {(form.cat === 'Música' || form.cat === 'Podcasts') && (
           <div className="form-group">
             <label className="input-label">
@@ -163,11 +205,15 @@ export default function CollectionsView() {
         </button>
       </div>
 
+      {/* Items list */}
       <div className="card">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
           <div className="section-label" style={{ marginBottom: 0 }}>
             <i className="ti ti-stack-2" />
             {activeCat === 'Todas' ? 'Todo' : activeCat}
+            <span style={{ fontSize: '13px', fontFamily: 'Jost', fontWeight: 400, color: 'var(--ink-3)' }}>
+              {' '}· {filtered.length} ítem{filtered.length !== 1 ? 's' : ''}
+            </span>
           </div>
           {filtered.length > 0 && (
             <button className="btn-ghost" onClick={() => setSharing(true)}>
@@ -179,7 +225,7 @@ export default function CollectionsView() {
         {filtered.length === 0 ? (
           <div className="empty-state">
             <i className="ti ti-stack-2" />
-            <p>Sin entradas en esta categoría</p>
+            <p>Sin entradas aquí todavía</p>
           </div>
         ) : (
           filtered.map(it => (
@@ -202,6 +248,17 @@ export default function CollectionsView() {
                   </div>
                 )}
               </div>
+              {/* Status quick-change */}
+              <select
+                className="input"
+                style={{ width: 'auto', fontSize: '11px', padding: '4px 6px', flexShrink: 0 }}
+                value={it.status || 'pendiente'}
+                onClick={e => e.stopPropagation()}
+                onChange={e => updateStatus(it.id, e.target.value, e)}>
+                {STATUSES.map(s => (
+                  <option key={s.key} value={s.key}>{s.label}</option>
+                ))}
+              </select>
               <button className="btn-del" onClick={e => removeItem(it.id, e)}
                 style={{ color: 'var(--ink-4)' }}>
                 <i className="ti ti-trash" />
@@ -211,7 +268,13 @@ export default function CollectionsView() {
         )}
       </div>
 
-      {selected && <ItemModal item={selected} onClose={() => setSelected(null)} />}
+      {selected && (
+        <ItemModal item={selected} onClose={() => setSelected(null)}
+          onStatusChange={(id, status) => {
+            setItems(prev => prev.map(x => x.id === id ? { ...x, status } : x));
+            setSelected(s => ({ ...s, status }));
+          }} />
+      )}
       {sharing && (
         <ShareModal type="collection" todos={[]} items={items} activeCat={activeCat}
           onClose={() => setSharing(false)} />

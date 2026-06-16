@@ -24,7 +24,7 @@ export default function App() {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
         <div>
-          <h1 className="brand">my<em>list</em></h1>
+          <h1 className="brand">Cla<em>rity</em></h1>
           <p className="brand-sub">tu espacio personal</p>
         </div>
         <button className="theme-toggle" onClick={toggleTheme} style={{ marginTop: '6px' }}>
