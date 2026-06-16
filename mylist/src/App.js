@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TodoView from './components/TodoView';
 import CollectionsView from './components/CollectionsView';
 import { useLocalStorage } from './useLocalStorage';
@@ -7,16 +7,30 @@ export default function App() {
   const [tab, setTab] = useState('todo');
   const [todos] = useLocalStorage('todos', []);
   const [items] = useLocalStorage('items', []);
+  const [theme, setTheme] = useLocalStorage('theme', 'light');
+
+  // Aplica el tema al elemento raíz cada vez que cambia
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => setTheme(t => t === 'light' ? 'dark' : 'light');
 
   const pending = todos.filter(t => !t.done).length;
 
   return (
     <div className="app-wrapper">
 
-      {/* Brand */}
-      <div style={{ marginBottom: '0.5rem' }}>
-        <h1 className="brand">my<em>list</em></h1>
-        <p className="brand-sub">tu espacio personal</p>
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
+        <div>
+          <h1 className="brand">my<em>list</em></h1>
+          <p className="brand-sub">tu espacio personal</p>
+        </div>
+        <button className="theme-toggle" onClick={toggleTheme} style={{ marginTop: '6px' }}>
+          <i className={`ti ${theme === 'light' ? 'ti-moon' : 'ti-sun'}`} />
+          {theme === 'light' ? 'Oscuro' : 'Claro'}
+        </button>
       </div>
 
       {/* Stats */}
