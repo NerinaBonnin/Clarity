@@ -25,7 +25,10 @@ function RatingPicker({ value, onChange }) {
   );
 }
 
-const EMPTY_FORM = { title: '', creator: '', cat: 'Películas', rating: 0, desc: '', img: '' };
+const EMPTY_FORM = {
+  title: '', creator: '', cat: 'Películas',
+  rating: 0, desc: '', img: '', spotifyUrl: ''
+};
 
 export default function CollectionsView() {
   const [items, setItems] = useLocalStorage('items', []);
@@ -34,14 +37,28 @@ export default function CollectionsView() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [selected, setSelected] = useState(null);
   const [sharing, setSharing] = useState(false);
+  const [preview, setPreview] = useState(null);
 
   const update = (key, val) => setForm(f => ({ ...f, [key]: val }));
+
+  // Convierte la imagen seleccionada a base64
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      setPreview(ev.target.result);
+      update('img', ev.target.result);
+    };
+    reader.readAsDataURL(file);
+  };
 
   const addItem = () => {
     if (!form.title.trim()) return;
     setItems(prev => [...prev, { ...form, title: form.title.trim(), id: nextId }]);
     setNextId(n => n + 1);
     setForm(EMPTY_FORM);
+    setPreview(null);
   };
 
   const removeItem = (id, e) => {
@@ -92,7 +109,43 @@ export default function CollectionsView() {
           </div>
         </div>
 
+        {/* Imagen desde dispositivo */}
         <div className="form-group" style={{ marginTop: '12px' }}>
+          <label className="input-label">Imagen</label>
+          <label className="image-upload-area">
+            {preview ? (
+              <img src={preview} alt="preview" className="image-preview" />
+            ) : (
+              <div className="image-upload-placeholder">
+                <i className="ti ti-photo-plus" />
+                <span>Seleccioná una imagen de tu dispositivo</span>
+              </div>
+            )}
+            <input type="file" accept="image/*" onChange={handleImageChange}
+              style={{ display: 'none' }} />
+          </label>
+          {preview && (
+            <button className="btn-ghost" style={{ marginTop: '6px', fontSize: '12px' }}
+              onClick={() => { setPreview(null); update('img', ''); }}>
+              <i className="ti ti-x" /> Quitar imagen
+            </button>
+          )}
+        </div>
+
+        {/* Link Spotify — solo para Música y Podcasts */}
+        {(form.cat === 'Música' || form.cat === 'Podcasts') && (
+          <div className="form-group">
+            <label className="input-label">
+              <i className="ti ti-brand-spotify" style={{ color: '#1DB954', marginRight: '4px' }} />
+              Link de Spotify
+            </label>
+            <input className="input" value={form.spotifyUrl}
+              onChange={e => update('spotifyUrl', e.target.value)}
+              placeholder="https://open.spotify.com/..." />
+          </div>
+        )}
+
+        <div className="form-group">
           <label className="input-label">Tu calificación</label>
           <RatingPicker value={form.rating} onChange={v => update('rating', v)} />
         </div>
@@ -102,13 +155,6 @@ export default function CollectionsView() {
           <textarea className="input" value={form.desc}
             onChange={e => update('desc', e.target.value)}
             placeholder="¿Qué te pareció? ¿Lo recomendarías?" />
-        </div>
-
-        <div className="form-group">
-          <label className="input-label">URL de imagen (opcional)</label>
-          <input className="input" value={form.img}
-            onChange={e => update('img', e.target.value)}
-            placeholder="https://..." />
         </div>
 
         <button className="btn-primary" style={{ width: '100%', justifyContent: 'center' }}
@@ -140,7 +186,7 @@ export default function CollectionsView() {
             <div key={it.id} className="item-row" onClick={() => setSelected(it)}>
               <div className="item-thumb">
                 {it.img
-                  ? <img src={it.img} alt={it.title} onError={e => { e.target.style.display = 'none'; }} />
+                  ? <img src={it.img} alt={it.title} />
                   : CAT_ICONS[it.cat] || '📌'}
               </div>
               <div className="item-info">
