@@ -1100,3 +1100,342 @@ select.input option {
   background: #713F12;
   color: #FEF08A;
 }
+
+/* ─── Stats Panel ────────────────────────────────────────── */
+.stats-panel {
+  margin-bottom: 1rem;
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 1rem;
+}
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.stat-card-value {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--ink);
+}
+.stat-card-label {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--ink-3);
+}
+.stat-card-bar {
+  height: 3px;
+  border-radius: 20px;
+  margin-top: 8px;
+}
+
+/* Donut chart */
+.donut-wrap {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1rem 0 0.5rem;
+}
+
+.donut-svg { 
+  flex-shrink: 0; 
+}
+
+.donut-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--ink-2);
+}
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.legend-val {
+  margin-left: auto;
+  font-weight: 500;
+  color: var(--ink);
+  font-size: 13px;
+}
+
+/* Bar chart */
+.bar-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 0.5rem;
+}
+.bar-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.bar-label {
+  font-size: 12px;
+  color: var(--ink-3);
+  width: 80px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bar-track {
+  flex: 1;
+  height: 8px;
+  background: var(--bg-input);
+  border-radius: 20px;
+  overflow: hidden;
+}
+.bar-fill {
+  height: 8px;
+  border-radius: 20px;
+  transition: width 0.6s ease;
+}
+.bar-val {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-2);
+  width: 24px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.stats-section-title {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--ink-3);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.toggle-stats-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  font-family: 'Jost', sans-serif;
+  font-size: 13px;
+  color: var(--ink-3);
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 1rem;
+}
+
+.toggle-stats-btn:hover { 
+  border-color: var(--border-md); 
+  color: var(--ink); 
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE DESIGN
+═══════════════════════════════════════════════════════════ */
+
+/* ─── Base móvil (todo arranca mobile-first) ─────────────── */
+.app-wrapper {
+  max-width: 660px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 5rem;
+}
+
+.brand { font-size: 2.2rem; }
+
+/* Stats grid en móvil: 2 columnas */
+.stats-grid {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+}
+.stat-card-value { font-size: 1.6rem; }
+
+/* Donut más chico en móvil */
+.donut-wrap {
+  gap: 1rem;
+}
+
+/* Form rows apilados en móvil */
+.form-row {
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Sort bar scrolleable en móvil */
+.sort-bar {
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.sort-bar::-webkit-scrollbar { display: none; }
+
+/* Cat tabs scrolleables en móvil */
+.cat-tabs {
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.cat-tabs::-webkit-scrollbar { display: none; }
+
+/* Priority selector en móvil */
+.priority-selector {
+  flex-direction: column;
+  gap: 6px;
+}
+.priority-btn { width: 100%; justify-content: center; }
+
+/* Status selector scrolleable */
+.status-selector {
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.status-selector::-webkit-scrollbar { display: none; }
+
+/* Item row en móvil */
+.item-row { gap: 10px; }
+.item-thumb { width: 40px; height: 40px; font-size: 18px; }
+.item-title-text { font-size: 13px; }
+.item-meta { font-size: 11px; }
+
+/* Modal en móvil: ocupa más pantalla */
+.modal-box {
+  max-width: 100%;
+  max-height: 95vh;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  animation: slideUpMobile 0.3s ease;
+}
+@keyframes slideUpMobile {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+.modal-overlay {
+  align-items: flex-end;
+}
+
+/* Tab nav en móvil */
+.tab-nav { gap: 0; overflow-x: auto; flex-wrap: nowrap; }
+.tab-btn { font-size: 13px; padding: 10px 16px 10px 0; white-space: nowrap; }
+
+/* Card padding reducido en móvil */
+.card { padding: 1rem 1rem; }
+
+/* Share buttons en móvil */
+.share-btn { font-size: 13px; padding: 11px 14px; }
+
+/* Legend items en móvil */
+.donut-legend { gap: 6px; }
+.legend-item { font-size: 12px; }
+
+/* Stat pills wrap en móvil */
+.stat-pills { gap: 6px; }
+.stat-pill { font-size: 11px; padding: 4px 10px; }
+
+/* Bar label más corto en móvil */
+.bar-label { width: 68px; font-size: 11px; }
+
+/* Select de status en item-row */
+.item-row select.input {
+  font-size: 10px;
+  padding: 3px 4px;
+  max-width: 90px;
+}
+
+/* Theme toggle más compacto */
+.theme-toggle { font-size: 12px; padding: 5px 10px; }
+
+/* Section label en móvil */
+.section-label { font-size: 1.1rem; }
+
+/* New list form */
+.new-list-form { padding: 10px; }
+.emoji-picker { gap: 4px; }
+.emoji-opt { width: 32px; height: 32px; font-size: 16px; }
+
+/* ─── Tablet (≥ 480px) ───────────────────────────────────── */
+@media (min-width: 480px) {
+  .app-wrapper { padding: 2rem 1.25rem 4rem; }
+  .brand { font-size: 2.5rem; }
+  .form-row { flex-direction: row; }
+  .priority-selector { flex-direction: row; }
+  .priority-btn { width: auto; }
+  .stat-card-value { font-size: 1.8rem; }
+  .item-thumb { width: 44px; height: 44px; }
+  .item-title-text { font-size: 14px; }
+  .card { padding: 1.25rem 1.35rem; }
+  .item-row select.input { font-size: 11px; padding: 4px 6px; max-width: 110px; }
+}
+
+/* ─── Desktop (≥ 640px) ──────────────────────────────────── */
+@media (min-width: 640px) {
+  .app-wrapper { padding: 3rem 1.25rem 4rem; }
+  .brand { font-size: 2.8rem; }
+  .stat-card-value { font-size: 2rem; }
+
+  /* Modal vuelve a ser centrado en desktop */
+  .modal-box {
+    max-width: 460px;
+    max-height: 90vh;
+    border-radius: var(--radius-lg);
+    position: relative;
+    bottom: auto;
+    left: auto;
+    right: auto;
+    animation: slideUp 0.25s ease;
+  }
+  .modal-overlay { align-items: center; }
+
+  .cat-tabs { flex-wrap: wrap; overflow-x: visible; }
+  .sort-bar  { flex-wrap: wrap; overflow-x: visible; }
+  .status-selector { flex-wrap: wrap; overflow-x: visible; }
+  .tab-nav { flex-wrap: wrap; overflow-x: visible; }
+
+  .card { padding: 1.4rem 1.5rem; }
+  .item-thumb { width: 46px; height: 46px; font-size: 22px; }
+  .item-row select.input { font-size: 11px; padding: 4px 6px; max-width: none; }
+  .section-label { font-size: 1.25rem; }
+  .share-btn { font-size: 14px; padding: 12px 16px; }
+  .theme-toggle { font-size: 13px; padding: 6px 12px; }
+  .bar-label { width: 80px; font-size: 12px; }
+  .legend-item { font-size: 13px; }
+  .stat-pill { font-size: 12px; padding: 5px 12px; }
+}
+
+/* ─── Large desktop (≥ 900px) ────────────────────────────── */
+@media (min-width: 900px) {
+  .app-wrapper { padding: 3rem 0 4rem; }
+}
