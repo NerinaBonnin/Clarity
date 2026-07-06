@@ -7,31 +7,28 @@ const PRIORITIES = [
   { key: 'media', label: '🟡 Media' },
   { key: 'baja',  label: '🟢 Baja' },
 ];
-
 const SORT_OPTIONS = [
-  { key: 'creacion',  label: 'Creación',  icon: 'ti-clock' },
-  { key: 'prioridad', label: 'Prioridad', icon: 'ti-alert-triangle' },
+  { key: 'creacion',    label: 'Creación',    icon: 'ti-clock' },
+  { key: 'prioridad',   label: 'Prioridad',   icon: 'ti-alert-triangle' },
   { key: 'vencimiento', label: 'Vencimiento', icon: 'ti-calendar' },
-  { key: 'az',        label: 'A–Z',       icon: 'ti-sort-ascending-letters' },
+  { key: 'az',          label: 'A–Z',         icon: 'ti-sort-ascending-letters' },
 ];
-
 const PRIORITY_ORDER = { alta: 0, media: 1, baja: 2, '': 3 };
 
 function PriorityDot({ priority }) {
-  const cls = priority ? `dot-${priority}` : 'dot-none';
-  return <span className={`priority-dot ${cls}`} />;
+  return <span className={`priority-dot ${priority ? `dot-${priority}` : 'dot-none'}`} />;
 }
 
 function dueMeta(dateStr) {
   if (!dateStr) return null;
   const today = new Date(); today.setHours(0,0,0,0);
-  const due = new Date(dateStr + 'T00:00:00');
-  const diff = Math.round((due - today) / 86400000);
+  const due   = new Date(dateStr + 'T00:00:00');
+  const diff  = Math.round((due - today) / 86400000);
   if (diff < 0)   return { label: `Venció hace ${Math.abs(diff)} día${Math.abs(diff) !== 1 ? 's' : ''}`, cls: 'due-over' };
   if (diff === 0) return { label: 'Vence hoy', cls: 'due-soon' };
   if (diff <= 2)  return { label: `Vence en ${diff} día${diff !== 1 ? 's' : ''}`, cls: 'due-soon' };
-  const date = new Date(dateStr + 'T00:00:00');
-  return { label: `Vence el ${date.toLocaleDateString('es-AR', { day: 'numeric', month: 'short' })}`, cls: '' };
+  const d = new Date(dateStr + 'T00:00:00');
+  return { label: `Vence el ${d.toLocaleDateString('es-AR', { day: 'numeric', month: 'short' })}`, cls: '' };
 }
 
 function highlight(text, query) {
@@ -49,14 +46,13 @@ function highlight(text, query) {
 
 const EMPTY_FORM = { text: '', priority: '', dueDate: '' };
 
-export default function TodoView() {
-  const [todos, setTodos] = useLocalStorage('todos', []);
+export default function TodoView({ todos, setTodos }) {
   const [nextId, setNextId] = useLocalStorage('todoNextId', 1);
-  const [form, setForm] = useState(EMPTY_FORM);
+  const [form, setForm]     = useState(EMPTY_FORM);
   const [sharing, setSharing] = useState(false);
-  const [filter, setFilter] = useState('todas');
-  const [search, setSearch] = useState('');
-  const [sort, setSort] = useState('creacion');
+  const [filter, setFilter]   = useState('todas');
+  const [search, setSearch]   = useState('');
+  const [sort, setSort]       = useState('creacion');
   const [sortDir, setSortDir] = useState('asc');
 
   const update = (key, val) => setForm(f => ({ ...f, [key]: val }));
@@ -64,20 +60,18 @@ export default function TodoView() {
   const add = () => {
     if (!form.text.trim()) return;
     setTodos(prev => [...prev, {
-      id: nextId,
-      text: form.text.trim(),
-      priority: form.priority,
-      dueDate: form.dueDate,
-      done: false,
+      id:        nextId,
+      text:      form.text.trim(),
+      priority:  form.priority,
+      dueDate:   form.dueDate,
+      done:      false,
       createdAt: Date.now(),
     }]);
     setNextId(n => n + 1);
     setForm(EMPTY_FORM);
   };
 
-  const toggle = (id) => setTodos(prev =>
-    prev.map(t => t.id === id ? { ...t, done: !t.done } : t)
-  );
+  const toggle = (id) => setTodos(prev => prev.map(t => t.id === id ? { ...t, done: !t.done } : t));
   const remove = (id) => setTodos(prev => prev.filter(t => t.id !== id));
 
   const toggleSort = (key) => {
@@ -86,20 +80,14 @@ export default function TodoView() {
   };
 
   const processed = useMemo(() => {
-    let list = [...todos];
-
-    // Filter por estado
-    if (filter === 'pendientes') list = list.filter(t => !t.done);
-    if (filter === 'completadas') list = list.filter(t => t.done);
-
-    // Búsqueda
+    let l = [...todos];
+    if (filter === 'pendientes')  l = l.filter(t => !t.done);
+    if (filter === 'completadas') l = l.filter(t => t.done);
     if (search.trim()) {
       const q = search.toLowerCase();
-      list = list.filter(t => t.text.toLowerCase().includes(q));
+      l = l.filter(t => t.text.toLowerCase().includes(q));
     }
-
-    // Orden
-    list.sort((a, b) => {
+    l.sort((a, b) => {
       let cmp = 0;
       if (sort === 'creacion')    cmp = (a.createdAt || 0) - (b.createdAt || 0);
       if (sort === 'prioridad')   cmp = PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority];
@@ -111,12 +99,11 @@ export default function TodoView() {
       }
       return sortDir === 'asc' ? cmp : -cmp;
     });
-
-    return list;
+    return l;
   }, [todos, filter, search, sort, sortDir]);
 
   const done = todos.filter(t => t.done).length;
-  const pct = todos.length ? Math.round((done / todos.length) * 100) : 0;
+  const pct  = todos.length ? Math.round((done / todos.length) * 100) : 0;
 
   return (
     <>
@@ -125,7 +112,6 @@ export default function TodoView() {
         <div className="section-label">
           <i className="ti ti-pencil-plus" /> Nueva tarea
         </div>
-
         <div className="form-group">
           <label className="input-label">Tarea *</label>
           <div style={{ display: 'flex', gap: '8px' }}>
@@ -138,7 +124,6 @@ export default function TodoView() {
             </button>
           </div>
         </div>
-
         <div className="form-group">
           <label className="input-label">Prioridad</label>
           <div className="priority-selector">
@@ -151,7 +136,6 @@ export default function TodoView() {
             ))}
           </div>
         </div>
-
         <div className="form-group" style={{ marginBottom: 0 }}>
           <label className="input-label">Fecha límite (opcional)</label>
           <input className="input" type="date" value={form.dueDate}
@@ -182,8 +166,6 @@ export default function TodoView() {
             <div className="progress-wrap" style={{ marginTop: 0 }}>
               <div className="progress-fill" style={{ width: `${pct}%` }} />
             </div>
-
-            {/* Búsqueda */}
             <div className="search-bar">
               <i className="ti ti-search" />
               <input className="input" value={search}
@@ -195,45 +177,30 @@ export default function TodoView() {
                 </button>
               )}
             </div>
-
-            {/* Filtro estado */}
             <div style={{ display: 'flex', gap: '6px', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
               {['todas', 'pendientes', 'completadas'].map(f => (
-                <button key={f}
-                  className={`sort-btn${filter === f ? ' active' : ''}`}
+                <button key={f} className={`sort-btn${filter === f ? ' active' : ''}`}
                   onClick={() => setFilter(f)}>
                   {f.charAt(0).toUpperCase() + f.slice(1)}
                 </button>
               ))}
             </div>
-
-            {/* Orden */}
             <div className="sort-bar">
               <span className="sort-label">Ordenar:</span>
               {SORT_OPTIONS.map(o => (
-                <button key={o.key}
-                  className={`sort-btn${sort === o.key ? ' active' : ''}`}
+                <button key={o.key} className={`sort-btn${sort === o.key ? ' active' : ''}`}
                   onClick={() => toggleSort(o.key)}>
                   <i className={`ti ${o.icon}`} />
                   {o.label}
-                  {sort === o.key && (
-                    <i className={`ti ${sortDir === 'asc' ? 'ti-arrow-up' : 'ti-arrow-down'}`} />
-                  )}
+                  {sort === o.key && <i className={`ti ${sortDir === 'asc' ? 'ti-arrow-up' : 'ti-arrow-down'}`} />}
                 </button>
               ))}
             </div>
-
-            {/* Resultados meta */}
             <div className="results-meta">
-              <span>
-                {processed.length} tarea{processed.length !== 1 ? 's' : ''}
-                {search && ` para "${search}"`}
-              </span>
+              <span>{processed.length} tarea{processed.length !== 1 ? 's' : ''}{search && ` para "${search}"`}</span>
               {search && (
                 <button className="btn-ghost" style={{ fontSize: '11px', padding: '3px 8px' }}
-                  onClick={() => setSearch('')}>
-                  Limpiar búsqueda
-                </button>
+                  onClick={() => setSearch('')}>Limpiar</button>
               )}
             </div>
           </>
@@ -242,7 +209,7 @@ export default function TodoView() {
         {processed.length === 0 ? (
           <div className="empty-state">
             <i className={search ? 'ti ti-search-off' : 'ti ti-mood-smile'} />
-            <p>{search ? `Sin resultados para "${search}"` : todos.length === 0 ? 'Todo limpio por ahora' : 'Sin tareas aquí'}</p>
+            <p>{search ? `Sin resultados para "${search}"` : todos.length === 0 ? 'Sin tareas todavía' : 'Sin tareas aquí'}</p>
           </div>
         ) : (
           processed.map(t => {
