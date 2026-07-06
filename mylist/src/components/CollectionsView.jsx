@@ -2,21 +2,18 @@ import React, { useState, useMemo } from 'react';
 import { useLocalStorage } from '../useLocalStorage';
 import ItemModal from './ItemModal';
 import ShareModal from './ShareModal';
-import SearchAPI from './SearchAPI';
 
 const CATS = ['Todas', 'Películas', 'Series', 'Libros', 'Música', 'Juegos', 'Podcasts'];
 const CAT_ICONS = {
   Películas: '🎬', Series: '📺', Libros: '📚',
   Música: '🎵', Juegos: '🎮', Podcasts: '🎙️',
 };
-
 const STATUSES = [
   { key: 'pendiente',  label: '📋 Pendiente' },
   { key: 'en-curso',   label: '▶️ En curso' },
   { key: 'completado', label: '✅ Completado' },
   { key: 'abandonado', label: '🚫 Abandonado' },
 ];
-
 const SORT_OPTIONS = [
   { key: 'creacion', label: 'Reciente',     icon: 'ti-clock' },
   { key: 'az',       label: 'A–Z',          icon: 'ti-sort-ascending-letters' },
@@ -149,39 +146,13 @@ export default function CollectionsView() {
           <i className="ti ti-circle-plus" /> Agregar a colección
         </div>
 
-      <div className="form-group">
+        <div className="form-group">
           <label className="input-label">Título *</label>
           <input className="input" value={form.title}
             onChange={e => update('title', e.target.value)}
             onKeyDown={e => e.key === 'Enter' && addItem()}
             placeholder="Nombre del ítem..." />
-      </div>
-
-    {/* Búsqueda automática con API */}
-    {(form.cat === 'Películas' || form.cat === 'Series' || form.cat === 'Libros') && (
-      <>
-        <div className="api-divider">o buscá automáticamente</div>
-        <div className="form-group">
-          <label className="input-label">
-            <i className="ti ti-api" style={{ marginRight: '4px', color: 'var(--accent)' }} />
-            Buscar y autocompletar
-          </label>
-          <SearchAPI
-            cat={form.cat}
-            onSelect={item => {
-              setForm(f => ({
-                ...f,
-                title:   item.title,
-                creator: item.creator,
-                img:     item.img,
-                desc:    item.desc,
-              }));
-              setPreview(item.img);
-            }}
-          />
         </div>
-      </>
-    )}
 
         <div className="form-row">
           <div className="form-group" style={{ marginBottom: 0 }}>
