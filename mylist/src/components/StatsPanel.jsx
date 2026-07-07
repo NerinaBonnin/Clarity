@@ -16,35 +16,25 @@ function DonutChart({ segments, size = 110, stroke = 16 }) {
   });
 
   return (
-    <svg
-      className="donut-svg"
-      width={size}
-      height={size}
+    <svg className="donut-svg" width={size} height={size}
       viewBox={`0 0 ${size} ${size}`}
-      style={{ transform: 'rotate(-90deg)', flexShrink: 0 }}
-    >
+      style={{ transform: 'rotate(-90deg)', flexShrink: 0 }}>
       {total === 0 ? (
         <circle cx={size/2} cy={size/2} r={r}
           fill="none" stroke="var(--border)" strokeWidth={stroke} />
       ) : (
         slices.map((s, i) => (
-          <circle key={i}
-            cx={size/2} cy={size/2} r={r}
-            fill="none" stroke={s.color}
-            strokeWidth={stroke}
+          <circle key={i} cx={size/2} cy={size/2} r={r}
+            fill="none" stroke={s.color} strokeWidth={stroke}
             strokeDasharray={`${s.dash} ${s.gap}`}
-            strokeDashoffset={-s.offset}
-            strokeLinecap="butt" />
+            strokeDashoffset={-s.offset} strokeLinecap="butt" />
         ))
       )}
-      <text x="50%" y="50%"
-        textAnchor="middle" dominantBaseline="middle"
+      <text x="50%" y="50%" textAnchor="middle" dominantBaseline="middle"
         style={{
-          transform: 'rotate(90deg)',
-          transformOrigin: 'center',
+          transform: 'rotate(90deg)', transformOrigin: 'center',
           fontFamily: "'Cormorant Garamond', serif",
-          fontSize: '20px', fontWeight: 600,
-          fill: 'var(--ink)',
+          fontSize: '20px', fontWeight: 600, fill: 'var(--ink)',
         }}>
         {total}
       </text>

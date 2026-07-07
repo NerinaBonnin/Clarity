@@ -80,7 +80,6 @@ export default function ItemModal({ item, onClose, onStatusChange }) {
             : <div style={{ fontSize: '12px', color: 'var(--ink-4)', marginBottom: '16px' }}>Sin calificación</div>
           }
 
-          {/* Cambiar estado desde el modal */}
           <div style={{ marginBottom: '16px' }}>
             <div className="modal-review-label">Estado</div>
             <div className="status-selector">

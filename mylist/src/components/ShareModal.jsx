@@ -8,33 +8,28 @@ const CAT_ICONS = {
 function buildTodoText(todos) {
   const date = new Date().toLocaleDateString('es-AR', { day: 'numeric', month: 'long' });
   const lines = todos.map(t => `${t.done ? '✅' : '⬜'} ${t.text}`);
-  const done = todos.filter(t => t.done).length;
+  const done  = todos.filter(t => t.done).length;
   return [
-    `📋 *Mi lista de tareas* — ${date}`,
-    '',
-    ...lines,
-    '',
-    `_${done}/${todos.length} completadas_`,
-    '',
+    `📋 *Mi lista de tareas* — ${date}`, '',
+    ...lines, '',
+    `_${done}/${todos.length} completadas_`, '',
     '— compartido desde mylist ✨',
   ].join('\n');
 }
 
 function buildCollectionText(items, cat) {
-  const date = new Date().toLocaleDateString('es-AR', { day: 'numeric', month: 'long' });
+  const date  = new Date().toLocaleDateString('es-AR', { day: 'numeric', month: 'long' });
   const title = cat === 'Todas' ? 'Mi colección' : `Mis ${cat}`;
-  const icon = cat !== 'Todas' ? (CAT_ICONS[cat] || '📚') : '🗂️';
+  const icon  = cat !== 'Todas' ? (CAT_ICONS[cat] || '📚') : '🗂️';
   const lines = items.map(it => {
-    const stars = it.rating > 0 ? ' ' + '⭐'.repeat(it.rating) : '';
+    const stars   = it.rating > 0 ? ' ' + '⭐'.repeat(it.rating) : '';
     const creator = it.creator ? ` — ${it.creator}` : '';
-    const desc = it.desc ? `\n   _"${it.desc}"_` : '';
+    const desc    = it.desc ? `\n   _"${it.desc}"_` : '';
     return `${CAT_ICONS[it.cat] || '•'} *${it.title}*${creator}${stars}${desc}`;
   });
   return [
-    `${icon} *${title}* — ${date}`,
-    '',
-    ...lines,
-    '',
+    `${icon} *${title}* — ${date}`, '',
+    ...lines, '',
     '— compartido desde mylist ✨',
   ].join('\n');
 }
@@ -49,7 +44,7 @@ export default function ShareModal({ type, todos, items, activeCat, onClose }) {
         activeCat
       );
 
-  const waUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
+  const waUrl       = `https://wa.me/?text=${encodeURIComponent(text)}`;
   const telegramUrl = `https://t.me/share/url?url=&text=${encodeURIComponent(text)}`;
 
   const handleCopy = async () => {
@@ -69,17 +64,10 @@ export default function ShareModal({ type, todos, items, activeCat, onClose }) {
     }
   };
 
-  const handleNativeShare = async () => {
-    if (!navigator.share) return;
-    try { await navigator.share({ text }); } catch {}
-  };
-
   return (
     <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
       <div className="modal-box" style={{ maxWidth: '420px' }}>
-        <button className="modal-close" onClick={onClose}>
-          <i className="ti ti-x" />
-        </button>
+        <button className="modal-close" onClick={onClose}><i className="ti ti-x" /></button>
         <div className="modal-body">
           <div style={{ marginBottom: '1.25rem' }}>
             <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.5rem', fontWeight: 600, color: 'var(--ink)', marginBottom: '4px' }}>
@@ -92,10 +80,9 @@ export default function ShareModal({ type, todos, items, activeCat, onClose }) {
 
           <div style={{
             background: 'var(--bg-input)', border: '1px solid var(--border)',
-            borderRadius: 'var(--radius-md)', padding: '14px',
-            fontSize: '13px', color: 'var(--ink-2)', lineHeight: '1.7',
-            whiteSpace: 'pre-wrap', maxHeight: '180px', overflowY: 'auto',
-            fontFamily: 'monospace', marginBottom: '1.25rem',
+            borderRadius: 'var(--radius-md)', padding: '14px', fontSize: '13px',
+            color: 'var(--ink-2)', lineHeight: '1.7', whiteSpace: 'pre-wrap',
+            maxHeight: '180px', overflowY: 'auto', fontFamily: 'monospace', marginBottom: '1.25rem',
           }}>
             {text}
           </div>
@@ -109,7 +96,6 @@ export default function ShareModal({ type, todos, items, activeCat, onClose }) {
                 Compartir en WhatsApp
               </button>
             </a>
-
             <a href={telegramUrl} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
               <button className="share-btn share-tg">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
@@ -118,23 +104,17 @@ export default function ShareModal({ type, todos, items, activeCat, onClose }) {
                 Compartir en Telegram
               </button>
             </a>
-
             {!!navigator.share && (
-              <button className="share-btn share-native" onClick={handleNativeShare}>
+              <button className="share-btn share-native" onClick={async () => { try { await navigator.share({ text }); } catch {} }}>
                 <i className="ti ti-share" style={{ fontSize: '18px' }} />
                 Más opciones (Instagram, Notes...)
               </button>
             )}
-
             <button className="share-btn share-copy" onClick={handleCopy}>
               <i className={`ti ${copied ? 'ti-check' : 'ti-copy'}`} style={{ fontSize: '18px' }} />
               {copied ? '¡Copiado!' : 'Copiar texto'}
             </button>
           </div>
-
-          <p style={{ fontSize: '11px', color: 'var(--ink-4)', textAlign: 'center', marginTop: '1rem' }}>
-            En celular, "Más opciones" abre el menú nativo para compartir con cualquier app.
-          </p>
         </div>
       </div>
     </div>

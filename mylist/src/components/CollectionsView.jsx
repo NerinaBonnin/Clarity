@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useLocalStorage } from '../useLocalStorage';
 import ItemModal from './ItemModal';
 import ShareModal from './ShareModal';
+import SearchAPI from './SearchAPI';
 
 const CATS = ['Todas', 'Películas', 'Series', 'Libros', 'Música', 'Juegos', 'Podcasts'];
 const CAT_ICONS = {
@@ -54,17 +55,17 @@ const EMPTY_FORM = {
 };
 
 export default function CollectionsView() {
-  const [items, setItems] = useLocalStorage('items', []);
+  const [items, setItems]   = useLocalStorage('items', []);
   const [nextId, setNextId] = useLocalStorage('itemNextId', 1);
-  const [activeCat, setActiveCat] = useState('Todas');
+  const [activeCat, setActiveCat]       = useState('Todas');
   const [activeStatus, setActiveStatus] = useState('todos');
-  const [form, setForm] = useState(EMPTY_FORM);
+  const [form, setForm]     = useState(EMPTY_FORM);
   const [selected, setSelected] = useState(null);
-  const [sharing, setSharing] = useState(false);
-  const [preview, setPreview] = useState(null);
-  const [search, setSearch] = useState('');
-  const [sort, setSort] = useState('creacion');
-  const [sortDir, setSortDir] = useState('desc');
+  const [sharing, setSharing]   = useState(false);
+  const [preview, setPreview]   = useState(null);
+  const [search, setSearch]     = useState('');
+  const [sort, setSort]         = useState('creacion');
+  const [sortDir, setSortDir]   = useState('desc');
   const [minRating, setMinRating] = useState(0);
 
   const update = (key, val) => setForm(f => ({ ...f, [key]: val }));
@@ -97,17 +98,9 @@ export default function CollectionsView() {
 
   const processed = useMemo(() => {
     let list = [...items];
-
-    // Filtro categoría
     if (activeCat !== 'Todas') list = list.filter(x => x.cat === activeCat);
-
-    // Filtro estado
     if (activeStatus !== 'todos') list = list.filter(x => (x.status || 'pendiente') === activeStatus);
-
-    // Filtro calificación mínima
     if (minRating > 0) list = list.filter(x => x.rating >= minRating);
-
-    // Búsqueda
     if (search.trim()) {
       const q = search.toLowerCase();
       list = list.filter(x =>
@@ -115,8 +108,6 @@ export default function CollectionsView() {
         (x.creator || '').toLowerCase().includes(q)
       );
     }
-
-    // Orden
     list.sort((a, b) => {
       let cmp = 0;
       if (sort === 'creacion') cmp = (a.createdAt || 0) - (b.createdAt || 0);
@@ -124,7 +115,6 @@ export default function CollectionsView() {
       if (sort === 'rating')   cmp = (a.rating || 0) - (b.rating || 0);
       return sortDir === 'asc' ? cmp : -cmp;
     });
-
     return list;
   }, [items, activeCat, activeStatus, minRating, search, sort, sortDir]);
 
@@ -153,6 +143,32 @@ export default function CollectionsView() {
             onKeyDown={e => e.key === 'Enter' && addItem()}
             placeholder="Nombre del ítem..." />
         </div>
+
+        {/* Búsqueda automática con API */}
+        {(form.cat === 'Películas' || form.cat === 'Series' || form.cat === 'Libros') && (
+          <>
+            <div className="api-divider">o buscá automáticamente</div>
+            <div className="form-group">
+              <label className="input-label">
+                <i className="ti ti-api" style={{ marginRight: '4px', color: 'var(--accent)' }} />
+                Buscar y autocompletar
+              </label>
+              <SearchAPI
+                cat={form.cat}
+                onSelect={item => {
+                  setForm(f => ({
+                    ...f,
+                    title:   item.title,
+                    creator: item.creator,
+                    img:     item.img,
+                    desc:    item.desc,
+                  }));
+                  setPreview(item.img);
+                }}
+              />
+            </div>
+          </>
+        )}
 
         <div className="form-row">
           <div className="form-group" style={{ marginBottom: 0 }}>
@@ -250,7 +266,6 @@ export default function CollectionsView() {
 
         {items.length > 0 && (
           <>
-            {/* Búsqueda */}
             <div className="search-bar">
               <i className="ti ti-search" />
               <input className="input" value={search}
@@ -263,51 +278,39 @@ export default function CollectionsView() {
               )}
             </div>
 
-            {/* Filtro estado */}
             <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '0.75rem' }}>
               {['todos', ...STATUSES.map(s => s.key)].map(s => (
-                <button key={s}
-                  className={`sort-btn${activeStatus === s ? ' active' : ''}`}
+                <button key={s} className={`sort-btn${activeStatus === s ? ' active' : ''}`}
                   onClick={() => setActiveStatus(s)}>
                   {s === 'todos' ? 'Todos' : STATUSES.find(x => x.key === s)?.label}
                 </button>
               ))}
             </div>
 
-            {/* Filtro calificación mínima */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
               <span className="sort-label">Mínimo:</span>
               {[0,1,2,3,4,5].map(n => (
-                <button key={n}
-                  className={`sort-btn${minRating === n ? ' active' : ''}`}
+                <button key={n} className={`sort-btn${minRating === n ? ' active' : ''}`}
                   onClick={() => setMinRating(n)}>
                   {n === 0 ? 'Todos' : '★'.repeat(n)}
                 </button>
               ))}
             </div>
 
-            {/* Orden */}
             <div className="sort-bar">
               <span className="sort-label">Ordenar:</span>
               {SORT_OPTIONS.map(o => (
-                <button key={o.key}
-                  className={`sort-btn${sort === o.key ? ' active' : ''}`}
+                <button key={o.key} className={`sort-btn${sort === o.key ? ' active' : ''}`}
                   onClick={() => toggleSort(o.key)}>
                   <i className={`ti ${o.icon}`} />
                   {o.label}
-                  {sort === o.key && (
-                    <i className={`ti ${sortDir === 'asc' ? 'ti-arrow-up' : 'ti-arrow-down'}`} />
-                  )}
+                  {sort === o.key && <i className={`ti ${sortDir === 'asc' ? 'ti-arrow-up' : 'ti-arrow-down'}`} />}
                 </button>
               ))}
             </div>
 
-            {/* Meta */}
             <div className="results-meta">
-              <span>
-                {processed.length} ítem{processed.length !== 1 ? 's' : ''}
-                {search && ` para "${search}"`}
-              </span>
+              <span>{processed.length} ítem{processed.length !== 1 ? 's' : ''}{search && ` para "${search}"`}</span>
               {(search || minRating > 0 || activeStatus !== 'todos') && (
                 <button className="btn-ghost" style={{ fontSize: '11px', padding: '3px 8px' }}
                   onClick={() => { setSearch(''); setMinRating(0); setActiveStatus('todos'); }}>
@@ -343,8 +346,7 @@ export default function CollectionsView() {
                   </div>
                 )}
               </div>
-              <select
-                className="input"
+              <select className="input"
                 style={{ width: 'auto', fontSize: '11px', padding: '4px 6px', flexShrink: 0 }}
                 value={it.status || 'pendiente'}
                 onClick={e => e.stopPropagation()}
