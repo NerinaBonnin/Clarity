@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useSearch } from '../hooks/useSearch';
 
-const SEARCHABLE = ['Películas', 'Series', 'Libros'];
+const SEARCHABLE = ['Películas', 'Series', 'Libros', 'Música'];
 
 export default function SearchAPI({ cat, onSelect }) {
   const [query, setQuery] = useState('');
@@ -30,6 +30,7 @@ export default function SearchAPI({ cat, onSelect }) {
     Películas: 'Buscar película...',
     Series:    'Buscar serie...',
     Libros:    'Buscar libro...',
+    Música:    'Buscar canción o artista...',
   }[cat];
 
   return (
@@ -65,7 +66,7 @@ export default function SearchAPI({ cat, onSelect }) {
               <div className="api-result-img">
                 {r.img
                   ? <img src={r.img} alt={r.title} />
-                  : <span>{cat === 'Libros' ? '📚' : cat === 'Series' ? '📺' : '🎬'}</span>
+                  : <span>{cat === 'Libros' ? '📚' : cat === 'Series' ? '📺' : cat === 'Música' ? '🎵' : '🎬'}</span>
                 }
               </div>
               <div className="api-result-info">
@@ -81,6 +82,16 @@ export default function SearchAPI({ cat, onSelect }) {
                   <div className="api-result-desc">
                     {r.desc.length > 80 ? r.desc.slice(0, 80) + '…' : r.desc}
                   </div>
+                )}
+              </div>
+              <div className="api-result-meta">
+                {r.creator && <span>{r.creator}</span>}
+                {r.apiData?.voteAverage > 0 && (
+                  <span className="api-vote">★ {r.apiData.voteAverage.toFixed(1)}</span>
+                )}
+                {r.apiData?.year && <span>{r.apiData.year}</span>}
+                {r.apiData?.listeners && (
+                  <span>🎧 {r.apiData.listeners} oyentes</span>
                 )}
               </div>
               <button className="api-select-btn"><i className="ti ti-plus" /></button>
