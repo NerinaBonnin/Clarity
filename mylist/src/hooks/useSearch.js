@@ -2,6 +2,7 @@ import { useState, useCallback, useRef } from 'react';
 import axios from 'axios';
 
 const TMDB_KEY  = '60373b02ed1c200eca17cd29e440fd19';
+const LASTFM_KEY  = '167cc0a0c14aacb56a85f0a4c1704b11';
 const TMDB_BASE = 'https://api.themoviedb.org/3';
 const IMG_BASE  = 'https://image.tmdb.org/t/p/w500';
 
@@ -58,6 +59,35 @@ async function searchBooks(query) {
   }));
 }
 
+async function searchMusic(query) {
+  const { data } = await axios.get('https://itunes.apple.com/search', {
+    params: {
+      term:       query,
+      media:      'music',
+      entity:     'song',
+      limit:      6,
+      lang:       'es_es',
+      country:    'AR',
+    },
+  });
+
+  if (!data?.results || data.results.length === 0) return [];
+
+  return data.results.map(t => ({
+    id:      t.trackId,
+    title:   t.trackName,
+    creator: t.artistName || '',
+    img:     t.artworkUrl100?.replace('100x100', '300x300') || '',
+    desc:    t.collectionName ? `Álbum: ${t.collectionName}` : '',
+    rating:  0,
+    cat:     'Música',
+    apiData: {
+      year: t.releaseDate ? t.releaseDate.slice(0, 4) : '',
+      genre: t.primaryGenreName || '',
+    },
+  }));
+}
+
 export function useSearch() {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -76,6 +106,7 @@ export function useSearch() {
         if (cat === 'Películas') data = await searchMovies(query);
         if (cat === 'Series')    data = await searchSeries(query);
         if (cat === 'Libros')    data = await searchBooks(query);
+        if (cat === 'Música') data = await searchMusic(query);
         setResults(data);
       } catch (e) {
         if (e.response?.status === 429) {

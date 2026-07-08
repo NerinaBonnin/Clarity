@@ -145,7 +145,7 @@ export default function CollectionsView() {
         </div>
 
         {/* Búsqueda automática con API */}
-        {(form.cat === 'Películas' || form.cat === 'Series' || form.cat === 'Libros') && (
+        {(form.cat === 'Películas' || form.cat === 'Series' || form.cat === 'Libros' || form.cat === 'Música') && (
           <>
             <div className="api-divider">o buscá automáticamente</div>
             <div className="form-group">
