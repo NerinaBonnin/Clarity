@@ -3,6 +3,7 @@ import axios from 'axios';
 
 const TMDB_KEY  = '60373b02ed1c200eca17cd29e440fd19';
 const LASTFM_KEY  = '167cc0a0c14aacb56a85f0a4c1704b11';
+const RAWG_KEY   = '403ed0bd7ab94ba59cdae5450ab39947';
 const TMDB_BASE = 'https://api.themoviedb.org/3';
 const IMG_BASE  = 'https://image.tmdb.org/t/p/w500';
 
@@ -88,6 +89,65 @@ async function searchMusic(query) {
   }));
 }
 
+async function searchPodcasts(query) {
+  const { data } = await axios.get('https://itunes.apple.com/search', {
+    params: {
+      term:    query,
+      media:   'podcast',
+      entity:  'podcast',
+      limit:   6,
+      lang:    'es_es',
+      country: 'AR',
+    },
+  });
+
+  if (!data?.results || data.results.length === 0) return [];
+
+  return data.results.map(p => ({
+    id:      p.collectionId,
+    title:   p.collectionName,
+    creator: p.artistName || '',
+    img:     p.artworkUrl100?.replace('100x100', '300x300') || '',
+    desc:    p.primaryGenreName ? `Género: ${p.primaryGenreName}` : '',
+    rating:  0,
+    cat:     'Podcasts',
+    apiData: {
+      episodes: p.trackCount ? `${p.trackCount} episodios` : '',
+      genre:    p.primaryGenreName || '',
+    },
+  }));
+}
+
+async function searchGames(query) {
+  const { data } = await axios.get('https://api.rawg.io/api/games', {
+    params: {
+      key:      RAWG_KEY,
+      search:   query,
+      page_size: 6,
+      language: 'es',
+    },
+  });
+
+  if (!data?.results || data.results.length === 0) return [];
+
+  return data.results.map(g => ({
+    id:      g.id,
+    title:   g.name,
+    creator: g.developers?.[0]?.name || '',
+    img:     g.background_image || '',
+    desc:    g.genres?.length > 0
+      ? `Géneros: ${g.genres.slice(0, 3).map(x => x.name).join(', ')}`
+      : '',
+    rating:  0,
+    cat:     'Juegos',
+    apiData: {
+      year:   g.released ? g.released.slice(0, 4) : '',
+      rating: g.rating ? g.rating.toFixed(1) : '',
+      platforms: g.platforms?.slice(0, 2).map(p => p.platform.name).join(', ') || '',
+    },
+  }));
+}
+
 export function useSearch() {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -107,6 +167,8 @@ export function useSearch() {
         if (cat === 'Series')    data = await searchSeries(query);
         if (cat === 'Libros')    data = await searchBooks(query);
         if (cat === 'Música') data = await searchMusic(query);
+        if (cat === 'Podcasts') data = await searchPodcasts(query);
+        if (cat === 'Juegos') data = await searchGames(query);
         setResults(data);
       } catch (e) {
         if (e.response?.status === 429) {
