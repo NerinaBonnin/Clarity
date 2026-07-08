@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useSearch } from '../hooks/useSearch';
 
-const SEARCHABLE = ['Películas', 'Series', 'Libros', 'Música'];
+const SEARCHABLE = ['Películas', 'Series', 'Libros', 'Música', 'Podcasts', 'Juegos'];
 
 export default function SearchAPI({ cat, onSelect }) {
   const [query, setQuery] = useState('');
@@ -31,6 +31,8 @@ export default function SearchAPI({ cat, onSelect }) {
     Series:    'Buscar serie...',
     Libros:    'Buscar libro...',
     Música:    'Buscar canción o artista...',
+    Podcasts:  'Buscar podcast...',
+    Juegos:    'Buscar videojuego...',
   }[cat];
 
   return (
@@ -66,7 +68,13 @@ export default function SearchAPI({ cat, onSelect }) {
               <div className="api-result-img">
                 {r.img
                   ? <img src={r.img} alt={r.title} />
-                  : <span>{cat === 'Libros' ? '📚' : cat === 'Series' ? '📺' : cat === 'Música' ? '🎵' : '🎬'}</span>
+                  : <span>{
+                    cat === 'Libros'   ? '📚' :
+                    cat === 'Series'   ? '📺' :
+                    cat === 'Música'   ? '🎵' :
+                    cat === 'Podcasts' ? '🎙️' :
+                    cat === 'Juegos'   ? '🎮' : '🎬'
+                    }</span>
                 }
               </div>
               <div className="api-result-info">
@@ -92,6 +100,46 @@ export default function SearchAPI({ cat, onSelect }) {
                 {r.apiData?.year && <span>{r.apiData.year}</span>}
                 {r.apiData?.listeners && (
                   <span>🎧 {r.apiData.listeners} oyentes</span>
+                )}
+              </div>
+
+              <div className="api-result-meta">
+                {r.creator && <span>{r.creator}</span>}
+                {r.apiData?.voteAverage > 0 && (
+                  <span className="api-vote">★ {r.apiData.voteAverage.toFixed(1)}</span>
+                )}
+                {r.apiData?.year && <span>{r.apiData.year}</span>}
+                {r.apiData?.listeners && (
+                  <span>🎧 {r.apiData.listeners} oyentes</span>
+                )}
+                {r.apiData?.episodes && (
+                  <span>🎙️ {r.apiData.episodes}</span>
+                )}
+                {r.apiData?.genre && (
+                  <span>{r.apiData.genre}</span>
+                )}
+              </div>
+
+              <div className="api-result-meta">
+                {r.creator && <span>{r.creator}</span>}
+                {r.apiData?.voteAverage > 0 && (
+                  <span className="api-vote">★ {r.apiData.voteAverage.toFixed(1)}</span>
+                )}
+                {r.apiData?.year && <span>{r.apiData.year}</span>}
+                {r.apiData?.listeners && (
+                  <span>🎧 {r.apiData.listeners} oyentes</span>
+                )}
+                {r.apiData?.episodes && (
+                  <span>🎙️ {r.apiData.episodes}</span>
+                )}
+                {r.apiData?.genre && (
+                  <span>{r.apiData.genre}</span>
+                )}
+                {r.apiData?.rating && (
+                  <span className="api-vote">★ {r.apiData.rating}</span>
+                )}
+                {r.apiData?.platforms && (
+                  <span>🎮 {r.apiData.platforms}</span>
                 )}
               </div>
               <button className="api-select-btn"><i className="ti ti-plus" /></button>
