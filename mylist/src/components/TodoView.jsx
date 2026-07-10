@@ -46,33 +46,35 @@ function highlight(text, query) {
 
 const EMPTY_FORM = { text: '', priority: '', dueDate: '' };
 
-export default function TodoView({ todos, setTodos }) {
-  const [nextId, setNextId] = useLocalStorage('todoNextId', 1);
+export default function TodoView({ todos, setTodos, onAdd, onUpdate, onRemove }) {
   const [form, setForm]     = useState(EMPTY_FORM);
   const [sharing, setSharing] = useState(false);
   const [filter, setFilter]   = useState('todas');
   const [search, setSearch]   = useState('');
   const [sort, setSort]       = useState('creacion');
   const [sortDir, setSortDir] = useState('asc');
+  const [showFilters, setShowFilters] = useState(false);
 
   const update = (key, val) => setForm(f => ({ ...f, [key]: val }));
 
-  const add = () => {
+  const add = async () => {
     if (!form.text.trim()) return;
-    setTodos(prev => [...prev, {
-      id:        nextId,
+    await onAdd({
       text:      form.text.trim(),
       priority:  form.priority,
       dueDate:   form.dueDate,
       done:      false,
       createdAt: Date.now(),
-    }]);
-    setNextId(n => n + 1);
+    });
     setForm(EMPTY_FORM);
   };
 
-  const toggle = (id) => setTodos(prev => prev.map(t => t.id === id ? { ...t, done: !t.done } : t));
-  const remove = (id) => setTodos(prev => prev.filter(t => t.id !== id));
+  const toggle = (id) => {
+    const todo = todos.find(t => t.id === id);
+    onUpdate(id, { ...todo, done: !todo.done });
+  };
+
+  const remove = (id) => onRemove(id);
 
   const toggleSort = (key) => {
     if (sort === key) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
@@ -177,32 +179,60 @@ export default function TodoView({ todos, setTodos }) {
                 </button>
               )}
             </div>
-            <div style={{ display: 'flex', gap: '6px', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
-              {['todas', 'pendientes', 'completadas'].map(f => (
-                <button key={f} className={`sort-btn${filter === f ? ' active' : ''}`}
-                  onClick={() => setFilter(f)}>
-                  {f.charAt(0).toUpperCase() + f.slice(1)}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+            <span style={{ fontSize: '12px', color: 'var(--ink-4)' }}>
+              {processed.length} tarea{processed.length !== 1 ? 's' : ''}
+              {search && ` para "${search}"`}
+            </span>
+            <button className="btn-ghost"
+              style={{ fontSize: '12px', padding: '5px 10px', display: 'flex', alignItems: 'center', gap: '5px' }}
+              onClick={() => setShowFilters(v => !v)}>
+              <i className="ti ti-adjustments-horizontal" />
+              Filtros
+              {(filter !== 'todas' || sort !== 'creacion') && (
+                <span style={{ background: 'var(--accent)', color: 'white', borderRadius: '10px', padding: '0 5px', fontSize: '10px' }}>
+                  •
+                </span>
+              )}
+              <i className={`ti ${showFilters ? 'ti-chevron-up' : 'ti-chevron-down'}`} />
+            </button>
+          </div>
+
+          {showFilters && (
+            <div style={{ background: 'var(--bg-input)', borderRadius: 'var(--radius-md)', padding: '12px', marginBottom: '0.75rem' }}>
+              <div style={{ marginBottom: '10px' }}>
+                <div className="sort-label" style={{ marginBottom: '6px' }}>Estado</div>
+                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                  {['todas', 'pendientes', 'completadas'].map(f => (
+                    <button key={f} className={`sort-btn${filter === f ? ' active' : ''}`}
+                      onClick={() => setFilter(f)}>
+                      {f.charAt(0).toUpperCase() + f.slice(1)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <div className="sort-label" style={{ marginBottom: '6px' }}>Ordenar</div>
+                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                  {SORT_OPTIONS.map(o => (
+                    <button key={o.key} className={`sort-btn${sort === o.key ? ' active' : ''}`}
+                      onClick={() => toggleSort(o.key)}>
+                      <i className={`ti ${o.icon}`} />
+                      {o.label}
+                      {sort === o.key && <i className={`ti ${sortDir === 'asc' ? 'ti-arrow-up' : 'ti-arrow-down'}`} />}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {(filter !== 'todas' || sort !== 'creacion' || search) && (
+                <button className="btn-ghost"
+                  style={{ fontSize: '11px', padding: '4px 8px', marginTop: '10px' }}
+                  onClick={() => { setFilter('todas'); setSort('creacion'); setSortDir('asc'); setSearch(''); }}>
+                  <i className="ti ti-x" /> Limpiar todo
                 </button>
-              ))}
-            </div>
-            <div className="sort-bar">
-              <span className="sort-label">Ordenar:</span>
-              {SORT_OPTIONS.map(o => (
-                <button key={o.key} className={`sort-btn${sort === o.key ? ' active' : ''}`}
-                  onClick={() => toggleSort(o.key)}>
-                  <i className={`ti ${o.icon}`} />
-                  {o.label}
-                  {sort === o.key && <i className={`ti ${sortDir === 'asc' ? 'ti-arrow-up' : 'ti-arrow-down'}`} />}
-                </button>
-              ))}
-            </div>
-            <div className="results-meta">
-              <span>{processed.length} tarea{processed.length !== 1 ? 's' : ''}{search && ` para "${search}"`}</span>
-              {search && (
-                <button className="btn-ghost" style={{ fontSize: '11px', padding: '3px 8px' }}
-                  onClick={() => setSearch('')}>Limpiar</button>
               )}
             </div>
+          )}
           </>
         )}
 

@@ -54,9 +54,8 @@ const EMPTY_FORM = {
   rating: 0, desc: '', img: '', spotifyUrl: '', status: 'pendiente',
 };
 
-export default function CollectionsView() {
-  const [items, setItems]   = useLocalStorage('items', []);
-  const [nextId, setNextId] = useLocalStorage('itemNextId', 1);
+export default function CollectionsView({ items, setItems, onAdd, onUpdate, onRemove }) {
+  const [showFilters, setShowFilters] = useState(false);
   const [activeCat, setActiveCat]       = useState('Todas');
   const [activeStatus, setActiveStatus] = useState('todos');
   const [form, setForm]     = useState(EMPTY_FORM);
@@ -78,17 +77,24 @@ export default function CollectionsView() {
     reader.readAsDataURL(file);
   };
 
-  const addItem = () => {
+  const addItem = async () => {
     if (!form.title.trim()) return;
-    setItems(prev => [...prev, { ...form, title: form.title.trim(), id: nextId, createdAt: Date.now() }]);
-    setNextId(n => n + 1);
-    setForm(EMPTY_FORM);
-    setPreview(null);
+    try {
+      await onAdd({ ...form, title: form.title.trim(), createdAt: Date.now() });
+      setForm(EMPTY_FORM);
+      setPreview(null);
+    } catch (e) {
+      console.error('Error al agregar:', e);
+    }
   };
 
-  const removeItem = (id, e) => {
+  const removeItem = async (id, e) => {
     e.stopPropagation();
-    setItems(prev => prev.filter(x => x.id !== id));
+    try {
+      await onRemove(id);
+    } catch (e) {
+      console.error('Error al eliminar:', e);
+    }
   };
 
   const toggleSort = (key) => {
@@ -97,7 +103,7 @@ export default function CollectionsView() {
   };
 
   const processed = useMemo(() => {
-    let list = [...items];
+    let list = Array.isArray(items) ? [...items] : [];
     if (activeCat !== 'Todas') list = list.filter(x => x.cat === activeCat);
     if (activeStatus !== 'todos') list = list.filter(x => (x.status || 'pendiente') === activeStatus);
     if (minRating > 0) list = list.filter(x => x.rating >= minRating);
@@ -278,46 +284,71 @@ export default function CollectionsView() {
               )}
             </div>
 
-            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '0.75rem' }}>
-              {['todos', ...STATUSES.map(s => s.key)].map(s => (
-                <button key={s} className={`sort-btn${activeStatus === s ? ' active' : ''}`}
-                  onClick={() => setActiveStatus(s)}>
-                  {s === 'todos' ? 'Todos' : STATUSES.find(x => x.key === s)?.label}
-                </button>
-              ))}
-            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+            <span style={{ fontSize: '12px', color: 'var(--ink-4)' }}>
+              {processed.length} ítem{processed.length !== 1 ? 's' : ''}
+              {search && ` para "${search}"`}
+            </span>
+            <button className="btn-ghost"
+              style={{ fontSize: '12px', padding: '5px 10px', display: 'flex', alignItems: 'center', gap: '5px' }}
+              onClick={() => setShowFilters(v => !v)}>
+              <i className="ti ti-adjustments-horizontal" />
+              Filtros
+              {(activeStatus !== 'todos' || minRating > 0 || sort !== 'creacion') && (
+                <span style={{ background: 'var(--accent)', color: 'white', borderRadius: '10px', padding: '0 5px', fontSize: '10px' }}>
+                  •
+                </span>
+              )}
+              <i className={`ti ${showFilters ? 'ti-chevron-up' : 'ti-chevron-down'}`} />
+            </button>
+          </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
-              <span className="sort-label">Mínimo:</span>
-              {[0,1,2,3,4,5].map(n => (
-                <button key={n} className={`sort-btn${minRating === n ? ' active' : ''}`}
-                  onClick={() => setMinRating(n)}>
-                  {n === 0 ? 'Todos' : '★'.repeat(n)}
-                </button>
-              ))}
-            </div>
-
-            <div className="sort-bar">
-              <span className="sort-label">Ordenar:</span>
-              {SORT_OPTIONS.map(o => (
-                <button key={o.key} className={`sort-btn${sort === o.key ? ' active' : ''}`}
-                  onClick={() => toggleSort(o.key)}>
-                  <i className={`ti ${o.icon}`} />
-                  {o.label}
-                  {sort === o.key && <i className={`ti ${sortDir === 'asc' ? 'ti-arrow-up' : 'ti-arrow-down'}`} />}
-                </button>
-              ))}
-            </div>
-
-            <div className="results-meta">
-              <span>{processed.length} ítem{processed.length !== 1 ? 's' : ''}{search && ` para "${search}"`}</span>
-              {(search || minRating > 0 || activeStatus !== 'todos') && (
-                <button className="btn-ghost" style={{ fontSize: '11px', padding: '3px 8px' }}
-                  onClick={() => { setSearch(''); setMinRating(0); setActiveStatus('todos'); }}>
-                  Limpiar filtros
+          {showFilters && (
+            <div style={{ background: 'var(--bg-input)', borderRadius: 'var(--radius-md)', padding: '12px', marginBottom: '0.75rem' }}>
+              <div style={{ marginBottom: '10px' }}>
+                <div className="sort-label" style={{ marginBottom: '6px' }}>Estado</div>
+                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                  {['todos', ...STATUSES.map(s => s.key)].map(s => (
+                    <button key={s} className={`sort-btn${activeStatus === s ? ' active' : ''}`}
+                      onClick={() => setActiveStatus(s)}>
+                      {s === 'todos' ? 'Todos' : STATUSES.find(x => x.key === s)?.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div style={{ marginBottom: '10px' }}>
+                <div className="sort-label" style={{ marginBottom: '6px' }}>Calificación mínima</div>
+                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                  {[0,1,2,3,4,5].map(n => (
+                    <button key={n} className={`sort-btn${minRating === n ? ' active' : ''}`}
+                      onClick={() => setMinRating(n)}>
+                      {n === 0 ? 'Todas' : '★'.repeat(n)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <div className="sort-label" style={{ marginBottom: '6px' }}>Ordenar</div>
+                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                  {SORT_OPTIONS.map(o => (
+                    <button key={o.key} className={`sort-btn${sort === o.key ? ' active' : ''}`}
+                      onClick={() => toggleSort(o.key)}>
+                      <i className={`ti ${o.icon}`} />
+                      {o.label}
+                      {sort === o.key && <i className={`ti ${sortDir === 'asc' ? 'ti-arrow-up' : 'ti-arrow-down'}`} />}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {(search || minRating > 0 || activeStatus !== 'todos' || sort !== 'creacion') && (
+                <button className="btn-ghost"
+                  style={{ fontSize: '11px', padding: '4px 8px', marginTop: '10px' }}
+                  onClick={() => { setSearch(''); setMinRating(0); setActiveStatus('todos'); setSort('creacion'); setSortDir('desc'); }}>
+                  <i className="ti ti-x" /> Limpiar todo
                 </button>
               )}
             </div>
+          )}
           </>
         )}
 
@@ -366,9 +397,11 @@ export default function CollectionsView() {
       </div>
 
       {selected && (
-        <ItemModal item={selected} onClose={() => setSelected(null)}
+        <ItemModal
+          item={selected}
+          onClose={() => setSelected(null)}
           onStatusChange={(id, status) => {
-            setItems(prev => prev.map(x => x.id === id ? { ...x, status } : x));
+            onUpdate(id, { ...items.find(x => x.id === id), status });
             setSelected(s => ({ ...s, status }));
           }} />
       )}
