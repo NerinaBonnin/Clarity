@@ -39,7 +39,7 @@ export default function App() {
   if (loading) return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)' }}>
       <div style={{ textAlign: 'center' }}>
-        <h1 className="brand">my<em>list</em></h1>
+        <h1 className="brand">cla<em>rity</em></h1>
         <p style={{ color: 'var(--ink-3)', marginTop: '8px', fontSize: '13px' }}>Cargando...</p>
       </div>
     </div>
@@ -53,7 +53,7 @@ export default function App() {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
         <div>
-          <h1 className="brand">my<em>list</em></h1>
+<h1 className="brand">clar<em>ity</em></h1>
           <p className="brand-sub">tu espacio personal</p>
         </div>
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '6px' }}>
