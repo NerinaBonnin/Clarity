@@ -2,7 +2,7 @@ import { useState, useCallback, useRef } from 'react';
 import axios from 'axios';
 
 const TMDB_KEY  = '60373b02ed1c200eca17cd29e440fd19';
-const LASTFM_KEY  = '167cc0a0c14aacb56a85f0a4c1704b11';
+//const _LASTFM_KEY  = '167cc0a0c14aacb56a85f0a4c1704b11';
 const RAWG_KEY   = '403ed0bd7ab94ba59cdae5450ab39947';
 const TMDB_BASE = 'https://api.themoviedb.org/3';
 const IMG_BASE  = 'https://image.tmdb.org/t/p/w500';
