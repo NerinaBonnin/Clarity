@@ -37,64 +37,6 @@ Este proyecto fue desarrollado utilizando el stack moderno de desarrollo web:
 <img src="../mylist/imagenes/barra de exportacion.png" alt="Login de Clarity" width="80%">
 
 
-### Estructura del Proyecto
-
-Para mantener el código limpio y escalable, el proyecto está estructurado de la siguiente manera:
-
-mylist/
-├── backend/
-│   ├── node_modules/
-│   ├── src
-│   │   ├── config/
-│   │   │   └── db.js
-│   │   ├── controllers/
-│   │   │   ├── authController.js
-│   │   │   ├── itemsController.js
-│   │   │   └── todosController.js
-│   │   ├── middleware/
-│   │   │   └── auth.js
-│   │   └── routes/
-│   │      ├── auth.js
-│   │      ├── items.js
-│   │      └── todos.js
-│   ├──.env
-│   ├── package-lock.json
-│   ├── package.json
-│   └── server.js
-├── imagenes/
-├── node_modules
-├── public
-│   ├── favicon
-│   │   └── favicon.png
-│   └── index.html
-├── src
-│   ├── api
-│   │   └── axios.js
-│   ├── components
-│   │   ├── Authpage.jsx
-│   │   ├── CollectionsView.jsx
-│   │   ├── ExportPDF.jsx
-│   │   ├── ItemModal.jsx
-│   │   ├── SearchAPI.jsx
-│   │   ├── ShareModal.jsx
-│   │   ├── StatsPanel.jsx
-│   │   └── TodoView.jsx
-│   ├── context
-│   │   └── AuthContext.jsx
-│   ├── hooks
-│   │   ├── useAPI.js
-│   │   └── useSearch.js
-│   ├── App.css
-│   ├── App.js
-│   ├── index.css
-│   ├── index.js
-│   └── useLocalStorage.js
-├── .gitignore
-├── package-lock.json
-├── package.json
-└── README.md
-
-
 ### Instalación y Configuración Local
 
 Si quieres clonar este proyecto y ejecutarlo en tu máquina local, sigue estos pasos:
