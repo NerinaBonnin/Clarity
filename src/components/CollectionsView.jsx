@@ -1,5 +1,4 @@
 import React, { useState, useMemo } from 'react';
-import { useLocalStorage } from '../useLocalStorage';
 import ItemModal from './ItemModal';
 import ShareModal from './ShareModal';
 import SearchAPI from './SearchAPI';

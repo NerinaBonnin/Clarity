@@ -1,5 +1,4 @@
 import React, { useState, useMemo } from 'react';
-import { useLocalStorage } from '../useLocalStorage';
 import ShareModal from './ShareModal';
 
 const PRIORITIES = [
