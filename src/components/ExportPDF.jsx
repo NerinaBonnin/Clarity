@@ -6,10 +6,10 @@ const STATUS_LABEL   = {
   'pendiente': 'Pendiente', 'en-curso': 'En curso',
   'completado': 'Completado', 'abandonado': 'Abandonado',
 };
-const CAT_ICONS_TEXT = {
-  Películas: 'Películas', Series: 'Series', Libros: 'Libros',
-  Música: 'Música', Juegos: 'Juegos', Podcasts: 'Podcasts',
-};
+//const CAT_ICONS_TEXT = {
+  //Películas: 'Películas', Series: 'Series', Libros: 'Libros',
+  //Música: 'Música', Juegos: 'Juegos', Podcasts: 'Podcasts',
+//};
 
 function formatDate(str) {
   if (!str) return '-';
